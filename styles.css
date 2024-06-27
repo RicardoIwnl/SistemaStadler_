@@ -1,0 +1,158 @@
+:root {
+    --sidebar-width: 200px;
+    --primary-color: #406de7;
+    --secondary-color: #555;
+    --hover-color: #45a049;
+    --background-color: #f2f2f2;
+    --text-color: #fff;
+    --font-family: Arial, sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    display: flex;
+}
+
+header #sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding-top: 60px;
+    text-align: center;
+}
+
+#sidebar h2 {
+    margin: 0 10px;
+}
+
+#sidebar button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    padding: 10px;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+#sidebar button:hover {
+    background-color: var(--secondary-color);
+}
+
+main {
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+    flex: 1;
+}
+
+#company-logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#company-logo {
+    width: 100px;
+    height: auto;
+}
+
+.form-container, .list-container {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+}
+
+.form-container button {
+    padding: 8px 20px;
+    background-color: var(--hover-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background-color: var(--secondary-color);
+}
+
+.checkbox-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.search-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-form input {
+    width: auto;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.list-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.list-container th, .list-container td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.list-container th {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.list-container td {
+    background-color: #f9f9f9;
+}
+
+.list-container .button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.list-container .button-group button {
+    padding: 8px 20px;
+    background-color: var(--hover-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.list-container .button-group button:hover {
+    background-color: var(--secondary-color);
+}

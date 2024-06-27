@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Stadler</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <nav id="sidebar">
+        <div id="company-logo-container">
+            <a id="company-logo-link" href="#">
+                <img id="company-logo" src="logo.png" alt="Logo da sua contabilidade">
+            </a>
+        </div>
+        <h2>Categorias</h2>
+        <button id="category-company">Empresas</button>
+        <button id="subcategory-socios">Sócios</button>
+        <button id="category-finance">Financeiro</button>
+        <div id="finance-subcategories">
+            <button id="subcategory-honorarios">Honorários</button>
+            <button id="subcategory-receber">Contas a Receber</button>
+            <button id="subcategory-pagar">Contas a Pagar</button>
+        </div>
+        <button id="category-obligations">Obrigações</button>
+    </nav>
+</header>
+<main>
+    <div id="content">
+        
+        <section id="company-form-section" class="form-container">
+            <h1>Stadler Assessoria Contábil</h1>
+            <h2>Cadastro de Empresa</h2>
+            <form id="company-form">
+                
+                <label for="company-name">Nome Fantasia:</label>
+                <input type="text" id="company-name" placeholder="Nome Fantasia" required>
+                <label for="company-legal-name">Razão Social:</label>
+                <input type="text" id="company-legal-name" placeholder="Razão Social" required>
+                <label for="company-cnpj">CNPJ:</label>
+                <input type="text" id="company-cnpj" placeholder="CNPJ" required>
+                <label for="company-address">Logradouro:</label>
+                <input type="text" id="company-address" placeholder="Logradouro" required>
+                <label for="company-city">Cidade:</label>
+                <input type="text" id="company-city" placeholder="Cidade" required>
+                <label for="company-state">Estado:</label>
+                <input type="text" id="company-state" placeholder="Estado" required>
+                <label for="company-postal-code">CEP:</label>
+                <input type="text" id="company-postal-code" placeholder="CEP" required>
+                <button type="submit">Salvar</button>
+            </form>
+        </section>
+        
+        
+        <section id="companies-list" class="list-container">
+            <h2>Lista de Empresas</h2>
+            <form id="search-company-form" class="search-form">
+                <input type="text" id="search-company-name" placeholder="Nome da Empresa">
+                <button type="button" onclick="searchCompany()">Pesquisar</button>
+                <button type="button" onclick="showCompanyForm()">Cadastrar Empresa</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome Fantasia</th>
+                        <th>Razão Social</th>
+                        <th>CNPJ</th>
+                        <th>Logradouro</th>
+                        <th>Cidade</th>
+                        <th>Estado</th>
+                        <th>CEP</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="companies-table-body"></tbody>
+            </table>
+            <div class="button-group">
+                <button id="export-companies" onclick="exportCompanies()">Exportar Empresas</button>
+                <button id="import-data">Importar Dados</button>
+                <input type="file" id="file-input" style="display: none;">
+            </div>
+        </section>
+        
+        
+        <section id="partners-form-section" class="form-container">
+            <h2>Cadastro de Sócios</h2>
+            <form id="partners-form">
+                <label for="partner-name">Nome do Sócio:</label>
+                <input type="text" id="partner-name" placeholder="Nome do Sócio" required>
+                <label for="partner-email">Email:</label>
+                <input type="email" id="partner-email" placeholder="Email do Sócio" required>
+                <label for="partner-phone">Telefone:</label>
+                <input type="tel" id="partner-phone" placeholder="Telefone do Sócio" required>
+                <label for="partner-cpf">CPF:</label>
+                <input type="text" id="partner-cpf" placeholder="CPF do Sócio" required>
+                <label for="partner-rg">RG:</label>
+                <input type="text" id="partner-rg" placeholder="RG do Sócio" required>
+                <div class="checkbox-container">
+                    <label for="partner-legal-representative">
+                        <input type="checkbox" id="partner-legal-representative">
+                        Responsável Legal
+                    </label>
+                </div>
+                <button type="submit">Salvar</button>
+            </form>
+        </section>
+        
+        
+        <section id="partners-list" class="list-container">
+            <h2>Lista de Sócios</h2>
+            <form id="search-partner-form" class="search-form">
+                <input type="text" id="search-partner-name" placeholder="Nome do Sócio">
+                <button type="button" onclick="searchPartner()">Pesquisar</button>
+                <button type="button" onclick="showPartnerForm()">Cadastrar Sócio</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>CPF</th>
+                        <th>RG</th>
+                        <th>Responsável Legal</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="partners-table-body"></tbody>
+            </table>
+            <div class="button-group">
+                <button id="export-partners" onclick="exportPartners()">Exportar Sócios</button>
+            </div>
+        </section>
+
+        
+        <section id="obligations-form-section" class="form-container">
+            <h2>Cadastro de Obrigações</h2>
+            <form id="obligations-form">
+                <label for="obligation-description">Descrição da Obrigação:</label>
+                <input type="text" id="obligation-description" placeholder="Descrição" required>
+                <label for="obligation-due-date">Data de Vencimento:</label>
+                <input type="date" id="obligation-due-date" required>
+                <label for="obligation-type">Tipo de Obrigação:</label>
+                <select id="obligation-type" required>
+                    <option value="fiscal">Fiscal</option>
+                    <option value="tributaria">Tributária</option>
+                    <option value="legal">Legal</option>
+                </select>
+                <label for="obligation-company">Empresa:</label>
+                <input type="text" id="obligation-company" placeholder="Empresa" required>
+                <button type="submit">Salvar</button>
+            </form>
+        </section>
+        
+        
+        <section id="obligations-list" class="list-container">
+            <h2>Lista de Obrigações</h2>
+            <form id="search-obligation-form" class="search-form">
+                <input type="text" id="search-obligation-description" placeholder="Descrição da Obrigação">
+                <button type="button" onclick="searchObligation()">Pesquisar</button>
+                <button type="button" onclick="showObligationForm()">Cadastrar Obrigação</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Data de Vencimento</th>
+                        <th>Tipo</th>
+                        <th>Empresa</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="obligations-table-body"></tbody>
+            </table>
+            <div class="button-group">
+                <button id="export-obligations" onclick="exportObligations()">Exportar Obrigações</button>
+            </div>
+        </section>
+    </div>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
