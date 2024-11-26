@@ -1,0 +1,48 @@
+CREATE TABLE empresas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_fantasia VARCHAR(255) NOT NULL,
+    razao_social VARCHAR(255) NOT NULL,
+    cnpj VARCHAR(18) NOT NULL UNIQUE,
+    logradouro VARCHAR(255) NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
+    estado VARCHAR(2) NOT NULL,
+    cep VARCHAR(9) NOT NULL,
+    forma_tributacao ENUM('Simples', 'Presumido', 'Real') NOT NULL,
+    tipo_empresa ENUM('Serviço', 'Comércio', 'Pessoa Física') NOT NULL,
+    cnae VARCHAR(20),
+    honorario DECIMAL(10, 2),
+    vencimento DATE,
+    data_entrada_saida DATE
+);
+CREATE TABLE socios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    telefone VARCHAR(20),
+    cpf VARCHAR(14) NOT NULL,
+    rg VARCHAR(20),
+    responsavel_legal BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+);
+CREATE TABLE obrigacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
+    nome VARCHAR(255) NOT NULL,
+    departamento VARCHAR(100),
+    responsavel VARCHAR(255),
+    mes_entrega VARCHAR(20),
+    lembrete_dias INT,
+    tipo_lembrete VARCHAR(50),
+    competencias VARCHAR(255),
+    ativa BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+);
+INSERT INTO empresas (nome_fantasia, razao_social, cnpj, logradouro, cidade, estado, cep, forma_tributacao, tipo_empresa, cnae, honorario, vencimento, data_entrada_saida)
+VALUES ('Empresa ABC', 'Empresa ABC Ltda.', '12.345.678/0001-99', 'Rua das Flores, 123', 'Lisboa', 'PT', '12345-678', 'Simples', 'Serviço', '6201-5/00', 5000.00, '2024-12-10', '2024-01-01');
+
+INSERT INTO socios (empresa_id, nome, email, telefone, cpf, rg, responsavel_legal)
+VALUES (1, 'João Silva', 'joao.silva@email.com', '912345678', '123.456.789-00', 'MG-12.345.678', TRUE);
+
+INSERT INTO obrigacoes (empresa_id, nome, departamento, responsavel, mes_entrega, lembrete_dias, tipo_lembrete, competencias, ativa)
+VALUES (1, 'Declaração Anual', 'Financeiro', 'Carlos Souza', 'Dezembro', 15, 'Dias Úteis', '2023-01', TRUE);

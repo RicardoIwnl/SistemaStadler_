@@ -1,30 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const companyForm = document.getElementById('company-form-section');
-    const partnersForm = document.getElementById('partners-form-section');
-    const partnersList = document.getElementById('partners-list');
-    const companiesList = document.getElementById('companies-list');
-    const obligationsForm = document.getElementById('obligations-form-section');
-    const obligationsList = document.getElementById('obligations-list');
 
-    document.getElementById('category-company').addEventListener('click', () => {
-        showSection(companiesList);
-    });
+    const sections = {
+        companyForm: document.getElementById('company-form-section'),
+        partnersForm: document.getElementById('partners-form-section'),
+        partnersList: document.getElementById('partners-list'),
+        companiesList: document.getElementById('companies-list'),
+        obligationsForm: document.getElementById('obligations-form-section'),
+        obligationsList: document.getElementById('obligations-list')
+    };
 
-    document.getElementById('subcategory-socios').addEventListener('click', () => {
-        showSection(partnersList);
-    });
+    const tables = {
+        partnersTable: 'partners-table-body',
+        companiesTable: 'companies-table-body',
+        obligationsTable: 'obligations-table-body'
+    };
 
-    document.getElementById('category-finance').addEventListener('click', () => {
-        document.getElementById('finance-subcategories').classList.toggle('show');
-    });
+    document.getElementById('category-company').addEventListener('click', () => showSection(sections.companiesList));
+    document.getElementById('subcategory-socios').addEventListener('click', () => showSection(sections.partnersList));
+    document.getElementById('category-finance').addEventListener('click', toggleFinanceSubcategories);
+    document.getElementById('category-obligations').addEventListener('click', () => showSection(sections.obligationsList));
 
-    document.getElementById('subcategory-honorarios').addEventListener('click', () => {
-        showSection(partnersForm);
-    });
-
-    document.getElementById('category-obligations').addEventListener('click', () => {
-        showSection(obligationsList);
-    });
+    document.getElementById('subcategory-honorarios').addEventListener('click', () => showSection(sections.partnersForm));
 
     function showSection(section) {
         hideAllSections();
@@ -32,67 +28,116 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function hideAllSections() {
-        const sections = document.querySelectorAll('.form-container, .list-container');
-        sections.forEach(section => section.style.display = 'none');
+        Object.values(sections).forEach(section => section.style.display = 'none');
     }
 
-    companyForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        addEntity(companyForm, 'companies-table-body');
-    });
+    function toggleFinanceSubcategories() {
+        document.getElementById('finance-subcategories').classList.toggle('show');
+    }
 
-    partnersForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        addEntity(partnersForm, 'partners-table-body');
-    });
+    sections.companyForm.querySelector('form').addEventListener('submit', (e) => handleFormSubmit(e, validateCompanyForm, tables.companiesTable));
+    sections.partnersForm.querySelector('form').addEventListener('submit', (e) => handleFormSubmit(e, validatePartnersForm, tables.partnersTable));
+    sections.obligationsForm.querySelector('form').addEventListener('submit', (e) => handleFormSubmit(e, validateObligationsForm, tables.obligationsTable));
 
-    obligationsForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        addEntity(obligationsForm, 'obligations-table-body');
-    });
+    function handleFormSubmit(event, validationFunction, tableId) {
+        event.preventDefault();
+        if (validationFunction()) {
+            addEntity(event.target, tableId);
+            event.target.reset();
+        } else {
+            alert('Por favor, preencha todos os campos corretamente.');
+        }
+    }
+
+    function validateCompanyForm() {
+        const formData = new FormData(sections.companyForm.querySelector('form'));
+        const patterns = {
+            cnpj: /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/,
+            postalCode: /^\d{5}-\d{3}$/
+        };
+
+        return formData.get('company-name').length >= 3 &&
+            formData.get('company-legal-name').length >= 3 &&
+            patterns.cnpj.test(formData.get('company-cnpj')) &&
+            formData.get('company-address').length >= 5 &&
+            formData.get('company-city').length >= 2 &&
+            formData.get('company-state').length >= 2 &&
+            patterns.postalCode.test(formData.get('company-postal-code'));
+    }
+
+    function validatePartnersForm() {
+        const formData = new FormData(sections.partnersForm.querySelector('form'));
+
+        return formData.get('partner-name').length >= 3 &&
+            validateEmail(formData.get('partner-email')) &&
+            formData.get('partner-phone').length >= 10 &&
+            formData.get('partner-cpf').length >= 11 &&
+            formData.get('partner-rg').length >= 8;
+    }
+
+    function validateEmail(email) {
+        const re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    }
+
+    function validateObligationsForm() {
+        const formData = new FormData(sections.obligationsForm.querySelector('form'));
+
+        return formData.get('obligation-name').length >= 3 &&
+            formData.get('obligation-department').length >= 3 &&
+            formData.get('obligation-responsible').length >= 3 &&
+            formData.get('obligation-delivery-month').length >= 3 &&
+            !isNaN(formData.get('obligation-reminder-days')) &&
+            formData.get('obligation-reminder-type').length >= 3 &&
+            formData.get('obligation-competencies').length >= 3;
+    }
 
     function addEntity(form, tableId) {
+        const formData = new FormData(form);
         const entity = {};
-        new FormData(form).forEach((value, key) => {
+
+        formData.forEach((value, key) => {
             entity[key] = value;
         });
-        if (form.id === 'partners-form' && form.querySelector('#partner-legal-representative').checked) {
-            entity['legalRepresentative'] = true;
+
+        if (form.id === 'partners-form') {
+            entity['partner-legal-representative'] = form.querySelector('#partner-legal-representative').checked ? 'Sim' : 'Não';
         }
+        if (form.id === 'obligations-form') {
+            entity['obligation-active'] = form.querySelector('#obligation-active').checked ? 'Sim' : 'Não';
+        }
+
         appendToTable(entity, tableId);
-        form.reset();
     }
 
     function appendToTable(item, tableId) {
         const tableBody = document.getElementById(tableId);
         const row = tableBody.insertRow();
-        for (const key in item) {
+
+        Object.values(item).forEach(value => {
             const cell = row.insertCell();
-            cell.textContent = item[key];
-        }
+            cell.textContent = value;
+        });
+
         const actionsCell = row.insertCell();
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.addEventListener('click', () => row.remove());
-        actionsCell.appendChild(deleteButton);
+        actionsCell.innerHTML = `<button onclick="editEntity(this)">Editar</button><button onclick="deleteEntity(this)">Excluir</button>`;
     }
 
-    window.searchPartner = function() {
-        const searchTerm = document.getElementById('search-partner-name').value.toLowerCase();
-        filterTable('partners-table-body', searchTerm);
+    window.editEntity = (button) => {
+        alert('Calma porra, eu ja coloco essa função');
     };
 
-    window.searchCompany = function() {
-        const searchTerm = document.getElementById('search-company-name').value.toLowerCase();
-        filterTable('companies-table-body', searchTerm);
+    window.deleteEntity = (button) => {
+        const row = button.parentElement.parentElement;
+        row.remove();
     };
 
-    window.searchObligation = function() {
-        const searchTerm = document.getElementById('search-obligation-description').value.toLowerCase();
-        filterTable('obligations-table-body', searchTerm);
-    };
+    window.searchPartner = () => searchTable('search-partner-name', tables.partnersTable);
+    window.searchCompany = () => searchTable('search-company-name', tables.companiesTable);
+    window.searchObligation = () => searchTable('search-obligation-name', tables.obligationsTable);
 
-    function filterTable(tableId, searchTerm) {
+    function searchTable(inputId, tableId) {
+        const searchTerm = document.getElementById(inputId).value.toLowerCase();
         const rows = document.querySelectorAll(`#${tableId} tr`);
         rows.forEach(row => {
             const cells = Array.from(row.cells);
@@ -101,60 +146,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    window.showPartnerForm = function() {
-        showSection(partnersForm);
-    };
+    window.showPartnerForm = () => showSection(sections.partnersForm);
+    window.showCompanyForm = () => showSection(sections.companyForm);
+    window.showObligationForm = () => showSection(sections.obligationsForm);
 
-    window.showCompanyForm = function() {
-        showSection(companyForm);
-    };
+    document.getElementById('import-data').addEventListener('click', () => document.getElementById('file-input').click());
+    document.getElementById('file-input').addEventListener('change', handleFileImport);
 
-    window.showObligationForm = function() {
-        showSection(obligationsForm);
-    };
-
-    document.getElementById('import-data').addEventListener('click', function() {
-        document.getElementById('file-input').click();
-    });
-
-    document.getElementById('file-input').addEventListener('change', function(event) {
+    function handleFileImport(event) {
         const file = event.target.files[0];
         if (file) {
-            // Handle file import logic here
-        }
-    });
-
-    function exportToCSV(data, filename) {
-        const csvContent = data.map(e => e.join(",")).join("\n");
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-
-        if (link.download !== undefined) {
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const reader = new FileReader();
+            reader.onload = (e) => processImport(e.target.result);
+            reader.readAsText(file);
         }
     }
 
-    window.exportCompanies = function() {
-        const table = document.getElementById('companies-table-body');
-        const data = Array.from(table.rows).map(row => Array.from(row.cells).map(cell => cell.textContent));
-        exportToCSV(data, 'empresas.csv');
-    };
+    function processImport(contents) {
+        console.log('Dados importados:', contents);
+    }
 
-    window.exportPartners = function() {
-        const table = document.getElementById('partners-table-body');
-        const data = Array.from(table.rows).map(row => Array.from(row.cells).map(cell => cell.textContent));
-        exportToCSV(data, 'socios.csv');
-    };
+    window.exportCompanies = () => exportToCSV(tables.companiesTable, 'empresas.csv');
+    window.exportPartners = () => exportToCSV(tables.partnersTable, 'sócios.csv');
+    window.exportObligations = () => exportToCSV(tables.obligationsTable, 'obrigações.csv');
 
-    window.exportObligations = function() {
-        const table = document.getElementById('obligations-table-body');
-        const data = Array.from(table.rows).map(row => Array.from(row.cells).map(cell => cell.textContent));
-        exportToCSV(data, 'obrigacoes.csv');
-    };
+    function exportToCSV(tableId, filename) {
+        const rows = Array.from(document.querySelectorAll(`#${tableId} tr`));
+        const csvContent = rows.map(row => {
+            return Array.from(row.cells).map(cell => {
+                return `"${cell.textContent.replace(/"/g, '""')}"`;
+            }).join(',');
+        }).join('\r\n');
+
+        const encodedUri = `data:text/csv;charset=utf-8,${encodeURIComponent(csvContent)}`;
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
 });
